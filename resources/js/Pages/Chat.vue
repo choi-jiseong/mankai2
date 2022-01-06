@@ -14,7 +14,7 @@
                             <div class="flex flex-col">
                                 <div class="">Messages</div>
                                 <div class="p-0">
-                                    <ul class="list-unstyled" style="height:300px; overflow-y:scroll">
+                                    <ul class="list-unstyled overflow-y-scroll" scroll-region style="height:300px;">
                                         <li class="p-2" v-for="(message, index) in messages" :key="index">
                                             <strong>{{ message.user.name }}</strong>
                                             {{ message.message }}
@@ -47,11 +47,14 @@
     import { defineComponent } from 'vue'
     import AppLayout from '@/Layouts/AppLayout.vue'
     import axios from 'axios'
+    import VueChatScroll from 'vue-chat-scroll'
+
 
     export default defineComponent({
         props : ['user'],
         components: {
             AppLayout,
+            VueChatScroll
         },
         data() {
             return {
@@ -72,8 +75,9 @@
                     user:this.user,
                     message:this.newMessage
                 });
-                axios.post('/chat/send', {message: this.newMessage}).then(response => {
-                    this.newMessage = '';
+                this.$inertia.post('/chat/send', {message: this.newMessage}, {
+                    preserveScroll : true,
+                    onSuccess : () => this.newMessage = ''
                 });
             }
         },

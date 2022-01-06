@@ -1280,6 +1280,9 @@ select {
 .overflow-y-hidden {
   overflow-y: hidden;
 }
+.overflow-y-scroll {
+  overflow-y: scroll;
+}
 .truncate {
   overflow: hidden;
   text-overflow: ellipsis;
