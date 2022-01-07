@@ -26,7 +26,7 @@ class ChatsController extends Controller
 
         broadcast(new MessageSent($message->load('user')))->toOthers();
 
-        return Redirect::route('chat');
+        return $message;
     }
 
 

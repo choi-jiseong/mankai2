@@ -14,12 +14,15 @@
                             <div class="flex flex-col">
                                 <div class="">Messages</div>
                                 <div class="p-0">
-                                    <ul class="list-unstyled overflow-y-scroll" scroll-region style="height:300px;">
+                                    <ul class="list-unstyled overflow-y-scroll" id="chatBody" style="height:300px;">
                                         <li class="p-2" v-for="(message, index) in messages" :key="index">
                                             <strong>{{ message.user.name }}</strong>
                                             {{ message.message }}
                                         </li>
                                     </ul>
+                                        <button @click="onButtom()" id="newMsg" v-show="newMsg" class="bg-blue-500">
+                                                {{ this.newMsg }}
+                                        </button>
                                 </div>
                                 <input type="text" v-model="newMessage" @keyup.enter="sendMessage" class="form-control" name="message" placeholder="enter your message">
                                 <span class="text-muted">user is typing</span>
@@ -60,14 +63,15 @@
             return {
                 users :[],
                 messages : [],
-                newMessage : ''
+                newMessage : '',
+                newMsg : ''
             }
         },
         methods : {
             fetchMessages() {
                 axios.get('/chat/messages').then(response => {
                     this.messages = response.data;
-                })
+                });
             },
             sendMessage() {
 
@@ -75,10 +79,13 @@
                     user:this.user,
                     message:this.newMessage
                 });
-                this.$inertia.post('/chat/send', {message: this.newMessage}, {
-                    preserveScroll : true,
-                    onSuccess : () => this.newMessage = ''
+                axios.post('/chat/send', {message: this.newMessage}).then(response => {
+                    this.newMessage = '',
+                    this.onButtom()
                 });
+            },
+            onButtom() {
+                document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
             }
         },
         mounted() {
@@ -100,11 +107,40 @@
             })
             .listen('MessageSent', (event) => {
                 this.messages.push(event.message);
+                if(document.getElementById('chatBody').scrollTop != document.getElementById('chatBody').scrollHeight - 300) {
+                    this.newMsg = event.message.message;
+                }else{
+                    setTimeout(()=> {
+                        document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight
+                    }, 0)
+                }
             });
+            const vm = this;
+             document.getElementById('chatBody').addEventListener('scroll', function(){
+                 console.log(document.getElementById('chatBody').scrollTop)
+                 console.log(document.getElementById('chatBody').scrollHeight)
+                if(document.getElementById('chatBody').scrollTop == document.getElementById('chatBody').scrollHeight-300){
+                    console.log(1)
+                    vm.newMsg = ''
+
+                }
+
+            });
+
         },
         created() {
             this.fetchMessages();
+
         }
     })
 </script>
+
+<style scoped>
+#newMsg {
+    position: absolute;
+    top : 480px;
+    left : 35px;
+    width : 400px;
+}
+</style>
 

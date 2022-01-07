@@ -969,6 +969,18 @@ select {
 .top-0 {
   top: 0px;
 }
+.bottom-5 {
+  bottom: 1.25rem;
+}
+.bottom-10 {
+  bottom: 2.5rem;
+}
+.bottom-0 {
+  bottom: 0px;
+}
+.top-80 {
+  top: 20rem;
+}
 .z-0 {
   z-index: 0;
 }
@@ -1407,6 +1419,10 @@ select {
 .bg-gray-200 {
   --tw-bg-opacity: 1;
   background-color: rgb(229 231 235 / var(--tw-bg-opacity));
+}
+.bg-blue-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(59 130 246 / var(--tw-bg-opacity));
 }
 .bg-opacity-25 {
   --tw-bg-opacity: 0.25;
