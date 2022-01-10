@@ -17,7 +17,7 @@
                                     <ul class="list-unstyled overflow-y-scroll" id="chatBody" style="height:300px;">
                                         <li class="p-2" v-for="(message, index) in messages" :key="index">
                                             <div :class="message.user.id == user.id ? 'text-right' : ''">
-                                                <strong v-if="message.user.id != user.id" :class="messages[index-1].user.id == message.user.id ? 'opacity-0':''" class="mr-2">{{ message.user.name }}</strong>
+                                                <strong v-if="message.user.id != user.id" class="mr-2">{{ message.user.name }}</strong>
                                                 <span class="rounded-md p-2 shadow-md" :class="message.user.id == user.id ? 'bg-blue-300 text-white' : 'bg-gray-300 text-gray-900'">{{ message.message }}</span>
                                             </div>
                                         </li>
@@ -72,7 +72,6 @@
                 axios.get('/chat/messages').then(response => {
                     this.messages = response.data;
                 });
-                // this.onButtom();
             },
             sendMessage() { //메세지 보내기
                 if(this.newMessage == '') {
@@ -131,6 +130,8 @@
                 }
 
             });
+
+
 
         },
         created() {
