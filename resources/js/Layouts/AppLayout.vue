@@ -264,6 +264,7 @@
         data() {
             return {
                 showingNavigationDropdown: false,
+                users : [],
             }
         },
 
@@ -279,6 +280,9 @@
             logout() {
                 this.$inertia.post(route('logout'));
             },
-        }
+        },
+        mounted() {
+
+        },
     })
 </script>

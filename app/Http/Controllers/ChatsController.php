@@ -16,7 +16,7 @@ class ChatsController extends Controller
     }
 
     public function fetchMessages() {
-        return Message::with('user')->get();
+        return Message::with('user')->latest()->get();
     }
 
     public function sendMessage(Request $request) {

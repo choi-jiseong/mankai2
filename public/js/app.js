@@ -20032,7 +20032,8 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      showingNavigationDropdown: false
+      showingNavigationDropdown: false,
+      users: []
     };
   },
   methods: {
@@ -20046,7 +20047,8 @@ __webpack_require__.r(__webpack_exports__);
     logout: function logout() {
       this.$inertia.post(route('logout'));
     }
-  }
+  },
+  mounted: function mounted() {}
 }));
 
 /***/ }),
@@ -20682,8 +20684,12 @@ __webpack_require__.r(__webpack_exports__);
 
       //메세지 가져오기
       axios__WEBPACK_IMPORTED_MODULE_2___default().get('/chat/messages').then(function (response) {
-        _this.messages = response.data;
-      });
+        // setTimeout(() => {
+        console.log(2);
+        _this.messages = response.data; // },0);
+
+        console.log(_this.messages); // this.onButtom();
+      }); // this.$inertia.get('/chat/messages');
     },
     sendMessage: function sendMessage() {
       var _this2 = this;
@@ -20692,7 +20698,7 @@ __webpack_require__.r(__webpack_exports__);
       if (this.newMessage == '') {
         return;
       } else {
-        this.messages.push({
+        this.messages.unshift({
           user: this.user,
           message: this.newMessage
         });
@@ -20705,13 +20711,16 @@ __webpack_require__.r(__webpack_exports__);
     },
     onButtom: function onButtom() {
       // 스크롤 맨 밑으로
-      document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+      // setTimeout(() => {
+      console.log(1);
+      document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight; // }, 0);
     }
   },
   mounted: function mounted() {
     var _this3 = this;
 
-    Echo.join('chat').here(function (user) {
+    Echo.join('chat') // Echo.join('user')
+    .here(function (user) {
       console.log('here');
       console.log(user);
       _this3.users = user;
@@ -20747,10 +20756,12 @@ __webpack_require__.r(__webpack_exports__);
 
       if (document.getElementById('chatBody').scrollTop == document.getElementById('chatBody').scrollHeight - 300) {
         //스크롤 맨 밑으로 내리면 newMsg false로
-        console.log(1);
+        // console.log(1)
         vm.newMsg = '';
       }
-    });
+    }); // setTimeout(() => {
+    //     this.onButtom();
+    // }, 0);
   },
   created: function created() {
     this.fetchMessages();
@@ -24599,7 +24610,7 @@ var _hoisted_9 = {
   "class": "p-0 relative"
 };
 var _hoisted_10 = {
-  "class": "list-unstyled overflow-y-scroll",
+  "class": "flex flex-col-reverse list-unstyled overflow-y-scroll",
   id: "chatBody",
   style: {
     "height": "300px"
@@ -24616,22 +24627,6 @@ var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElement
 /* HOISTED */
 );
 
-var _hoisted_13 = {
-  "class": "w-1/3"
-};
-var _hoisted_14 = {
-  "class": "card card-default"
-};
-
-var _hoisted_15 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-  "class": "card-header"
-}, "Active Users", -1
-/* HOISTED */
-);
-
-var _hoisted_16 = {
-  "class": "card-body"
-};
 function render(_ctx, _cache, $props, $setup, $data, $options) {
   var _this = this;
 
@@ -24682,16 +24677,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         placeholder: "enter your message"
       }, null, 544
       /* HYDRATE_EVENTS, NEED_PATCH */
-      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, _ctx.newMessage]]), _hoisted_12])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_13, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [_hoisted_15, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.users, function (user, index) {
-        return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("li", {
-          "class": "py-2",
-          key: index
-        }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(user.name), 1
-        /* TEXT */
-        );
-      }), 128
-      /* KEYED_FRAGMENT */
-      ))])])])])])])])])];
+      ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, _ctx.newMessage]]), _hoisted_12])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" <div class=\"w-1/3\">\n                            <div class=\"card card-default\">\n                                <div class=\"card-header\">Active Users</div>\n                                 <div class=\"card-body\">\n                                    <ul>\n                                        <li class=\"py-2\" v-for=\"(user,index) in users\" :key=\"index\">{{ user.name }}</li>\n                                    </ul>\n                                </div>\n                            </div>\n                        </div> ")])])])])];
     }),
     _: 1
     /* STABLE */

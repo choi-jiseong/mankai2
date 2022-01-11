@@ -14,7 +14,8 @@
                             <div class="flex flex-col">
                                 <div class="">Messages</div>
                                 <div class="p-0 relative">
-                                    <ul class="list-unstyled overflow-y-scroll" id="chatBody" style="height:300px;">
+                                    <ul class="flex flex-col-reverse list-unstyled overflow-y-scroll" id="chatBody" style="height:300px;">
+
                                         <li class="p-2" v-for="(message, index) in messages" :key="index">
                                             <div :class="message.user.id == user.id ? 'text-right' : ''">
                                                 <strong v-if="message.user.id != user.id" class="mr-2">{{ message.user.name }}</strong>
@@ -30,16 +31,16 @@
                                 <span class="text-muted">user is typing</span>
                             </div>
                         </div>
-                        <div class="w-1/3">
+                        <!-- <div class="w-1/3">
                             <div class="card card-default">
                                 <div class="card-header">Active Users</div>
-                                <div class="card-body">
+                                 <div class="card-body">
                                     <ul>
                                         <li class="py-2" v-for="(user,index) in users" :key="index">{{ user.name }}</li>
                                     </ul>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
 
                 </div>
@@ -70,14 +71,22 @@
         methods : {
             fetchMessages() {  //메세지 가져오기
                 axios.get('/chat/messages').then(response => {
-                    this.messages = response.data;
+                    // setTimeout(() => {
+                        console.log(2);
+                        this.messages = response.data;
+                    // },0);
+
+                    console.log(this.messages);
+                    // this.onButtom();
                 });
+                // this.$inertia.get('/chat/messages');
+
             },
             sendMessage() { //메세지 보내기
                 if(this.newMessage == '') {
                     return ;
                 }else {
-                    this.messages.push({
+                    this.messages.unshift({
                         user:this.user,
                         message:this.newMessage
                     });
@@ -89,15 +98,22 @@
 
             },
             onButtom() {  // 스크롤 맨 밑으로
-                document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+
+                // setTimeout(() => {
+                    console.log(1);
+                    document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight;
+                // }, 0);
+
             }
         },
         mounted() {
             Echo.join('chat')
+            // Echo.join('user')
             .here(user => {
                 console.log('here');
                 console.log(user);
                 this.users = user;
+
             })
             .joining(user => {
                 console.log('joining');
@@ -124,14 +140,15 @@
                 console.log(document.getElementById('chatBody').scrollTop)
                 console.log(document.getElementById('chatBody').scrollHeight)
                 if(document.getElementById('chatBody').scrollTop == document.getElementById('chatBody').scrollHeight-300){ //스크롤 맨 밑으로 내리면 newMsg false로
-                    console.log(1)
+                    // console.log(1)
                     vm.newMsg = ''
 
                 }
 
             });
-
-
+            // setTimeout(() => {
+            //     this.onButtom();
+            // }, 0);
 
         },
         created() {
