@@ -33,6 +33,10 @@ Route::get('/chat', function () {
     return Inertia::render('Chat', ['user' => auth()->user()]);
 })->name('chat');
 
+Route::get('/test', function () {
+    return Inertia::render('Test');
+});
+
 Route::get('/chat/messages', [ChatsController::class, 'fetchMessages'])->name('chat.messages');
 
 Route::post('/chat/send', [ChatsController::class, 'sendMessage'])->name('chat.send');

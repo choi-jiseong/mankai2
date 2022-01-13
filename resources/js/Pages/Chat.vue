@@ -42,18 +42,25 @@
               <span class="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3">
               </span>
             </div>
-            <div class="relative">
-              <ul id="chatBody" class="space-y-2 flex flex-col-reverse w-full p-6 overflow-y-auto h-[38rem] scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch" >
-                <li class="flex"  v-for="(message, index) in messages.data" :key="index" :class="message.user.id == user.id ? 'justify-end' : 'justify-start'">
-                    <span>{{message.user.name}}</span>
-                  <div  class="relative max-w-xl px-4 py-2 text-gray-700 rounded-lg shadow " :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'">
-                    <span class="block">{{ message.message }}</span>
-                  </div>
-                </li>
-              </ul>
-                <button @click="onButtom()" id="newMsg" v-show="newMsg" class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 bg-gray-300 rounded-xl opacity-50">
-                    {{ this.newMsg }}
-                </button>
+            <div @contextmenu.prevent @click="hideContextMenu()">
+                <ul id="chatBody" class="space-y-2 flex flex-col-reverse w-full p-6 overflow-y-auto h-[38rem] scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch" >
+                    <li class="flex"  v-for="(message, index) in messages.data" :key="index" :class="message.user.id == user.id ? 'justify-end' : 'justify-start'">
+                        <span>{{message.user.name}}</span>
+                        <div :id="'message-'+message.id" @contextmenu="showContextMenu($event, message)" class="message relative max-w-xl px-4 py-2 text-gray-700 rounded-lg shadow " :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'">
+                            {{ message.message }}
+                        </div>
+                    </li>
+                        <ul v-show="false" id="message-set-menu" class="absolute list-unstyle bg-white border" >
+                            <li @click="addNewItem()" class="border hover:bg-red-500">add</li>
+                            <li @click="updateItem()" class="border hover:bg-red-500">update</li>
+                            <li @click="removeItem()" class="border hover:bg-red-500">delete</li>
+                        </ul>
+                </ul>
+                <div class="relative">
+                    <button @click="onButtom()" id="newMsg" v-show="newMsg" class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 bg-gray-300 rounded-xl opacity-50">
+                        {{ this.newMsg }}
+                    </button>
+                </div>
             </div>
 
             <div class="flex items-center justify-between w-full p-3 border-t border-gray-300">
@@ -97,6 +104,7 @@
     </div>
 </template>
 
+
 <script>
     import { defineComponent } from 'vue'
     import AppLayout from '@/Layouts/AppLayout.vue'
@@ -114,9 +122,38 @@
                 messages : [],
                 newMessage : '',
                 newMsg : '',
+                setMessage : null,
             }
         },
         methods : {
+            showContextMenu(e, message) {
+                console.log(message);
+                if ( e.target.className.startsWith("message") ) {
+                    e.preventDefault();
+                    var menu = document.getElementById("message-set-menu");
+                    menu.style.left = e.pageX + 'px'
+                    menu.style.top = e.pageY + 'px'
+                    menu.style.display = 'block'
+                    // menu.cid = e.target.id.replace(/message-/,"")
+                    // console.log ( "cid")
+                    console.log ( message.id )
+                    this.setMessage = message;
+                }else{
+                    this.hideContextMenu();
+                }
+            },
+            hideContextMenu() {
+                document.getElementById("message-set-menu").style.display = "none"
+            },
+            addNewItem() {
+                console.log(this.setMessage);
+            },
+            updateItem() {
+                console.log(this.setMessage);
+            },
+            removeItem() {
+                console.log(this.setMessage);
+            },
             fetchMessages() {  //메세지 가져오기
                 axios.get('/chat/messages').then(response => {
                         this.messages = response.data;
@@ -181,6 +218,7 @@
             const vm = this;
             let a = -document.getElementById('chatBody').scrollHeight*(0.3);
             document.getElementById('chatBody').addEventListener('scroll', function(){  //채팅창 스크롤 이벤트
+                vm.hideContextMenu();
                 console.log(document.getElementById('chatBody').scrollTop)
                 console.log(document.getElementById('chatBody').scrollHeight)
                 if(document.getElementById('chatBody').scrollTop == 0){ //스크롤 맨 밑으로 내리면 newMsg false로
@@ -208,13 +246,11 @@
                 }
 
             });
-            // setTimeout(() => {
-            //     this.onButtom();
-            // }, 0);
 
         },
         created() {
             this.fetchMessages();
+
 
         }
     })
