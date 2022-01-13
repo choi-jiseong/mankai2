@@ -51,7 +51,7 @@
                         </div>
                     </li>
                         <ul v-show="false" id="message-set-menu" class="absolute list-unstyle bg-white border" >
-                            <li @click="addNewItem()" class="border hover:bg-red-500">add</li>
+                            <li @click="copyItem()" class="border hover:bg-red-500">복사</li>
                             <li @click="updateItem()" class="border hover:bg-red-500">update</li>
                             <li @click="removeItem()" class="border hover:bg-red-500">delete</li>
                         </ul>
@@ -134,8 +134,6 @@
                     menu.style.left = e.pageX + 'px'
                     menu.style.top = e.pageY + 'px'
                     menu.style.display = 'block'
-                    // menu.cid = e.target.id.replace(/message-/,"")
-                    // console.log ( "cid")
                     console.log ( message.id )
                     this.setMessage = message;
                 }else{
@@ -145,7 +143,7 @@
             hideContextMenu() {
                 document.getElementById("message-set-menu").style.display = "none"
             },
-            addNewItem() {
+            copyItem() {
                 console.log(this.setMessage);
             },
             updateItem() {

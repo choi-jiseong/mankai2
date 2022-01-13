@@ -20706,9 +20706,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var menu = document.getElementById("message-set-menu");
         menu.style.left = e.pageX + 'px';
         menu.style.top = e.pageY + 'px';
-        menu.style.display = 'block'; // menu.cid = e.target.id.replace(/message-/,"")
-        // console.log ( "cid")
-
+        menu.style.display = 'block';
         console.log(message.id);
         this.setMessage = message;
       } else {
@@ -20718,7 +20716,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     hideContextMenu: function hideContextMenu() {
       document.getElementById("message-set-menu").style.display = "none";
     },
-    addNewItem: function addNewItem() {
+    copyItem: function copyItem() {
       console.log(this.setMessage);
     },
     updateItem: function updateItem() {
@@ -24836,10 +24834,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
   /* KEYED_FRAGMENT */
   )), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("ul", _hoisted_9, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", {
     onClick: _cache[0] || (_cache[0] = function ($event) {
-      return _ctx.addNewItem();
+      return _ctx.copyItem();
     }),
     "class": "border hover:bg-red-500"
-  }, "add"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", {
+  }, "복사"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("li", {
     onClick: _cache[1] || (_cache[1] = function ($event) {
       return _ctx.updateItem();
     }),
