@@ -29,15 +29,13 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->name('dashboard');
 
-Route::get('/chat', function () {
-    return Inertia::render('Chat', ['user' => auth()->user()]);
-})->name('chat');
+Route::get('/chat', [ChatsController::class, 'chatIndex'])->name('chat');
 
 Route::get('/test', function () {
     return Inertia::render('Test');
 });
 
-Route::get('/chat/messages', [ChatsController::class, 'fetchMessages'])->name('chat.messages');
+Route::get('/chat/messages/{roomId}', [ChatsController::class, 'fetchMessages'])->name('chat.messages');
 
 Route::post('/chat/send', [ChatsController::class, 'sendMessage'])->name('chat.send');
 Route::post('/chat/create/room', [ChatsController::class, 'createRoom'])->name('chat.create');

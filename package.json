@@ -26,8 +26,11 @@
         "vue-loader": "^16.1.2"
     },
     "dependencies": {
+        "jquery": "^3.6.0",
         "laravel-echo": "^1.11.3",
+        "moment": "^2.29.1",
         "pusher-js": "^7.0.3",
-        "vue-chat-scroll": "^1.4.0"
+        "vue-chat-scroll": "^1.4.0",
+        "vuemoji-picker": "0.0.7"
     }
 }
