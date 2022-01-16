@@ -40,3 +40,4 @@ Route::get('/test', function () {
 Route::get('/chat/messages', [ChatsController::class, 'fetchMessages'])->name('chat.messages');
 
 Route::post('/chat/send', [ChatsController::class, 'sendMessage'])->name('chat.send');
+Route::post('/chat/create/room', [ChatsController::class, 'createRoom'])->name('chat.create');

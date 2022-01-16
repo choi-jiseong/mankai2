@@ -16,7 +16,8 @@
           </div>
 
           <ul class="overflow-auto h-[32rem]">
-            <h2 class="my-2 mb-2 ml-2 text-lg text-gray-600">Chat</h2>
+            <h2 class="my-2 mb-2 ml-2 text-lg text-gray-600 inline-block">Chat</h2>
+            <button @click="openRoomInvite = true" class="bg-blue-300 my-2 mb-2 mr-2 float-right w-10">+</button>
             <li>
               <a
                 class="flex items-center px-3 py-2 text-sm transition duration-150 ease-in-out border-b border-gray-300 cursor-pointer hover:bg-gray-100 focus:outline-none">
@@ -102,6 +103,20 @@
         </div>
       </div>
     </div>
+<jet-dialog-modal :show="openRoomInvite">
+            <template #title>
+                Favorite
+            </template>
+            <template #content>
+                <div>
+                    <div @click="this.checkUser = user" v-for="user in users" :key="user.id">{{user.name}}</div>
+                </div>
+            </template>
+            <template #footer>
+                <button @click="createRoom(this.checkUser.id)">createRoom</button>
+            </template>
+
+        </jet-dialog-modal>
 </template>
 
 
@@ -109,12 +124,14 @@
     import { defineComponent } from 'vue'
     import AppLayout from '@/Layouts/AppLayout.vue'
     import axios from 'axios'
+    import JetDialogModal from '@/JetStream/DialogModal.vue'
 
 
     export default defineComponent({
         props : ['user'],
         components: {
             AppLayout,
+            JetDialogModal,
         },
         data() {
             return {
@@ -123,9 +140,16 @@
                 newMessage : '',
                 newMsg : '',
                 setMessage : null,
+                openRoomInvite : false,
+                checkUser : null,
             }
         },
         methods : {
+            createRoom(id) {
+                axios.post('/chat/create/room', {id : id}).then(response => {
+                    console.log('success');
+                })
+            },
             showContextMenu(e, message) {
                 console.log(message);
                 if ( e.target.className.startsWith("message") ) {
@@ -173,9 +197,7 @@
                         this.onButtom();
                     });
 
-
                 }
-
             },
             onButtom() {  // 스크롤 맨 밑으로
 
