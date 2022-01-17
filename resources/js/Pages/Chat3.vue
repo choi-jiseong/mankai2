@@ -12,7 +12,8 @@
                                 5</div>
                         </div>
                         <div class="ml-auto">
-                            <button @click="openRoomInvite = true"
+                            <button
+                                @click="openRoomInvite = true"
                                 class="flex items-center justify-center h-7 w-7 bg-gray-200 text-gray-500 rounded-full">
                                 <span class="material-icons">
                                     add
@@ -84,8 +85,7 @@
                     </div>
                     <div class="h-full overflow-hidden relative pt-2">
                         <div class="flex flex-col divide-y h-full overflow-y-auto -mx-4">
-                            <div @click="fetchMessages(room.id, chatUsers[index])" v-for="(room, index) in rooms"
-                                :key="room.id" class="flex flex-row items-center p-4 relative">
+                            <div @click="fetchMessages(room.id, chatUsers[index])" v-for="(room, index) in rooms" :key="room.id" class="flex flex-row items-center p-4 relative">
                                 <div class="absolute text-xs text-gray-500 right-0 top-0 mr-4 mt-3">2 hours ago</div>
                                 <div
                                     class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500 text-pink-300 font-bold flex-shrink-0">
@@ -115,7 +115,7 @@
                     </div>
                 </div>
             </div>
-            <div class="flex flex-col h-full w-full bg-white px-4 py-6">
+            <div v-if="this.currentRoom" class="flex flex-col h-full w-full bg-white px-4 py-6">
                 <div class="flex flex-row items-center py-4 px-6 rounded-2xl shadow">
                     <div class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500 text-pink-100">
                         T
@@ -169,19 +169,12 @@
                     </div>
 
                 </div>
-                <div class="h-full">
-                      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  flex space-x-2 animate-pulse"
-                                v-show="loading">
-                                <div class="w-8 h-8 bg-blue-400 rounded-full"></div>
-                                <div class="w-8 h-8 bg-blue-400 rounded-full"></div>
-                                <div class="w-8 h-8 bg-blue-400 rounded-full"></div>
-                            </div>
 
+                <div class="h-full">
                     <div class="h-full" @contextmenu.prevent @click="hideContextMenu()">
-                        <div>
+                        <div >
                             <ul id="chatBody"
                                 class="space-y-2  overflow-y-auto max-h-[67vh] flex flex-col-reverse w-full p-2 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch ">
-
                                 <li class="flex p-1" v-for="(message, index) in messages.data" :key="index"
                                     :class="message.user.id == user.id ? 'justify-end' : 'justify-start'">
 
@@ -212,7 +205,7 @@
                                 </ul>
                             </ul>
                             <div class="relative">
-                                <button @click="onButtom(), this.newMsg = ''" id="newMsg" v-show="newMsg"
+                                <button @click="onButtom()" id="newMsg" v-show="newMsg"
                                     class="absolute bottom-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-11/12 bg-gray-300 rounded-xl opacity-50">
                                     {{ this.newMsg }}
                                 </button>
@@ -274,24 +267,24 @@
                     </div>
                 </div>
             </div>
-
+            <div v-else class="flex flex-col h-full w-full bg-white px-4 py-6">
+            </div>
         </div>
-        <jet-dialog-modal :show="openRoomInvite">
-            <template #title>
-                Favorite
-            </template>
-            <template #content>
-                <div>
-                    <div @click="this.checkUser = user" v-for="user in users" :key="user.id">{{user.name}}</div>
-                </div>
-            </template>
-            <template #footer>
-                <button @click="createRoom(this.checkUser.id)">createRoom</button>
-            </template>
-
-        </jet-dialog-modal>
     </app-layout>
+    <jet-dialog-modal :show="openRoomInvite">
+                <template #title>
+                    Favorite
+                </template>
+                <template #content>
+                    <div>
+                        <div @click="this.checkUser = user" v-for="user in users" :key="user.id">{{user.name}}</div>
+                    </div>
+                </template>
+                <template #footer>
+                    <button @click="createRoom(this.checkUser.id)">createRoom</button>
+                </template>
 
+            </jet-dialog-modal>
 </template>
 
 <script>
@@ -308,12 +301,13 @@
         VuemojiPickerStyle
     } from 'vuemoji-picker'
     import JetDialogModal from '@/JetStream/DialogModal.vue'
+
     export default defineComponent({
         props: ['user', 'rooms', 'chatUsers'],
         components: {
             AppLayout,
             VuemojiPicker,
-            JetDialogModal,
+            JetDialogModal
         },
         data() {
             return {
@@ -325,19 +319,15 @@
                 moment: moment,
                 showEmojiValue: 0,
                 locale: '',
-                openRoomInvite: false,
-                checkUser: null,
-                currentRoom: null,
-                currentToUser: null,
-                loading: false,
-                isfullpage: false,
+                openRoomInvite : false,
+                checkUser : null,
+                currentRoom : null,
+                currentToUser : null,
             }
         },
         methods: {
             createRoom(id) {
-                axios.post('/chat/create/room', {
-                    id: id
-                }).then(response => {
+                axios.post('/chat/create/room', {id : id}).then(response => {
                     console.log('success');
                 })
             },
@@ -357,7 +347,6 @@
             },
             hideContextMenu() {
                 document.getElementById("message-set-menu").style.display = "none"
-                this.showEmojiValue = 0
             },
             copyItem() {
                 console.log(this.setMessage);
@@ -369,12 +358,13 @@
                 console.log(this.setMessage);
             },
             fetchMessages(roomId, toUser) { //메세지 가져오기
-                axios.get('/chat/messages/' + roomId).then(response => {
+                axios.get('/chat/messages/'+roomId).then(response => {
                     this.messages = response.data;
                 });
                 // this.$inertia.get('/chat/messages');
                 this.currentRoom = roomId;
                 this.currentToUser = toUser;
+
             },
             sendMessage() { //메세지 보내기
                 if (this.newMessage == '') {
@@ -386,18 +376,18 @@
                     });
                     axios.post('/chat/send', {
                         message: this.newMessage,
-                        room_id: this.currentRoom,
+                        room_id : this.currentRoom,
                     }).then(response => {
+
                     });
                     this.newMessage = '',
-                        this.onButtom();
+                    this.onButtom();
                 }
             },
             onButtom() { // 스크롤 맨 밑으로
                 console.log(1);
                 document.getElementById('chatBody').scrollTop = document.getElementById('chatBody')
                     .scrollHeight;
-
             },
             handleEmojiClick(EmojiClickEventDetail) {
                 this.newMessage += EmojiClickEventDetail.unicode
@@ -409,26 +399,6 @@
                     this.showEmojiValue = 0
                     console.log("0으로")
                 }
-            },
-            loadMore() {
-                this.loading = true;
-                if (this.messages.current_page == this.messages.last_page) {
-                    this.loading = false;
-                    return;
-                } else {
-                    axios.get(this.messages.next_page_url).then(response => {
-                        this.messages = {
-                            ...response.data,
-                            'data': [...this.messages.data, ...response.data.data]
-                        };
-                        this.messages.data = this.messages.data;
-                    }).catch(error => {
-                        console.log(error);
-                    });
-                }
-                setTimeout(e => {
-                    this.loading = false;
-                }, 1000);
             }
         },
         mounted() {
@@ -459,16 +429,37 @@
                         document.getElementById('chatBody').scrollTop = document.getElementById('chatBody')
                             .scrollHeight
                         // }, 0)
-
                     }
                 });
-            let vm = this;
-            const chatBody2 = document.getElementById('chatBody');
-            chatBody2.addEventListener('scroll', function () { //채팅창 스크롤 이벤트
+            const vm = this;
+            let a = -document.getElementById('chatBody').scrollHeight * (0.3);
+            document.getElementById('chatBody').addEventListener('scroll', function () { //채팅창 스크롤 이벤트
                 vm.hideContextMenu();
-                if (-chatBody2.scrollTop + chatBody2
-                    .clientHeight - chatBody2.scrollHeight == -1) {
-                    vm.loadMore();
+                console.log(document.getElementById('chatBody').scrollTop)
+                console.log(document.getElementById('chatBody').scrollHeight)
+                if (document.getElementById('chatBody').scrollTop == 0) { //스크롤 맨 밑으로 내리면 newMsg false로
+                    // console.log(1)
+                    vm.newMsg = ''
+                } else if (document.getElementById('chatBody').scrollTop <= a) {
+                    console.log(1);
+                    console.log(a);
+                    if (vm.messages.current_page == vm.messages.last_page) {
+                        // alert('No more message')
+                        return;
+                    } else {
+                        axios.get(vm.messages.next_page_url).then(response => {
+                            // this.messages = response.data;
+                            // this.messages.data = [...this.messages.data, ...response.data.data]
+                            vm.messages = {
+                                ...response.data,
+                                'data': [...vm.messages.data, ...response.data.data]
+                            };
+                            vm.messages.data = vm.messages.data;
+                        }).catch(error => {
+                            console.log(error);
+                        });
+                    }
+                    a -= document.getElementById('chatBody').scrollHeight * (0.7);
                 }
             });
             // 외부영역 클릭 시 팝업 닫기
@@ -513,12 +504,6 @@
         --emoji-size: 20rem;
         --background: gray;
     }
-    .fade-enter-active,
-    .fade-leave-active {
-        transition: opacity .5s
-    }
-    .fade-enter,
-    .fade-leave-to {
-        opacity: 0
-    }
 </style>
+
+
