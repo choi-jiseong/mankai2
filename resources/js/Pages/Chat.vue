@@ -199,7 +199,15 @@
                                         <div :id="'message-'+message.id" @contextmenu="showContextMenu($event, message)"
                                             class="message relative max-w-xl px-4 py-2 text-gray-700 rounded-lg shadow text-center"
                                             :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'">
-                                            {{ message.message }}
+                                            <div v-if="message.message">
+                                                {{ message.message }}
+                                            </div>
+                                            <!-- <span v-if="message.image" :style="'background-image: url(\''+message.image+'\');'">
+
+                                            </span> -->
+                                            <img  :src="'/storage/'+message.image" alt="">
+
+
                                         </div>
                                         <div class="text-right">{{moment(message.updated_at).format('A HH:mm')}}</div>
                                     </div>
@@ -256,12 +264,12 @@
                                     attachment
                                 </span>
                             </button>
-
-                            <button class="flex items-center justify-center h-10 w-8 text-gray-400 ml-1 mr-2">
+                            <label class="flex cursor-pointer items-center justify-center h-10 w-8 text-gray-400 ml-1 mr-2">
                                 <span class="material-icons">
                                     image
                                 </span>
-                            </button>
+                                <input type='file' class="hidden" ref="image" @change="sendMessage" />
+                            </label>
                         </div>
                     </div>
                     <div class="ml-6">
@@ -308,12 +316,14 @@
         VuemojiPickerStyle
     } from 'vuemoji-picker'
     import JetDialogModal from '@/JetStream/DialogModal.vue'
+    import FileUpload from 'vue-upload-component'
     export default defineComponent({
         props: ['user', 'rooms', 'chatUsers'],
         components: {
             AppLayout,
             VuemojiPicker,
             JetDialogModal,
+            FileUpload
         },
         data() {
             return {
@@ -378,11 +388,32 @@
             },
             sendMessage() { //메세지 보내기
                 if (this.newMessage == '') {
-                    return;
+                    if(this.$refs.image){
+                            console.log(this.$refs.image.files[0]);
+                        this.messages.data.unshift({
+                            user: this.user,
+                            message: this.newMessage,
+                            image : this.$refs.image.files[0],
+                        });
+                        // axios.post('/chat/send', {
+                        //     message: this.newMessage,
+                        //     room_id: this.currentRoom,
+                        //     image : this.$refs.image.files[0],
+                        // }).then(response => {
+                        //     console.log(this.$refs.image.files[0]);
+                        // });
+                        // this.newMessage = '',
+                        //     this.onButtom();
+                        this.$inertia.post('/chat/send', {message: this.newMessage, room_id: this.currentRoom, image : this.$refs.image.files[0]});
+                    }else {
+                        return;
+                    }
+
                 } else {
                     this.messages.data.unshift({
                         user: this.user,
                         message: this.newMessage,
+                        image : this.$refs.image.files[0],
                     });
                     axios.post('/chat/send', {
                         message: this.newMessage,

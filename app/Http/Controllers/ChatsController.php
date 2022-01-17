@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Intervention\Image\Facades\Image;
 
 class ChatsController extends Controller
 {
@@ -39,29 +40,25 @@ class ChatsController extends Controller
 
         $room = new Room();
         $room->save();
-        $room['to_user'] = $to_user->name;
+
 
         $rooms = [];
         $toRooms = [];
-
-        if(!$user->rooms){
-            array_push($rooms,$room);
-            $user->rooms = json_encode($rooms);
-        }else {
+        $room['to_user'] = $to_user->name;
+        if($user->room){
             $rooms = json_decode($user->rooms);
-            array_push($rooms,$room);
-            $user->rooms = json_encode($rooms);
         }
+
+        array_push($rooms,$room);
+        $user->rooms = json_encode($rooms);
         $user->save();
 
-        if(!$to_user->rooms){
-            array_push($toRooms,$room);
-            $to_user->rooms = json_encode($toRooms);
-        }else {
+        $room['to_user'] = $user->name;
+        if($to_user->room){
             $toRooms = json_decode($to_user->rooms);
-            array_push($toRooms,$room);
-            $to_user->rooms = json_encode($toRooms);
         }
+        array_push($toRooms,$room);
+        $to_user->rooms = json_encode($toRooms);
         $to_user->save();
 
         return $room;
@@ -73,11 +70,20 @@ class ChatsController extends Controller
     }
 
     public function sendMessage(Request $request) {
-        echo $request->room_id;
+        // dd($request);
+        $image_path = null;
+
+        if ($request->hasFile('image')) {
+            $fileName = time() . '_' . $request->file('image')->getClientOriginalName();
+            $request->file('image')->storeAs('/public/images/'.$request->room_id.'/', $fileName);
+            $image_path ='/images/'.$request->room_id.'/'.$fileName ;
+        }
         $message = auth()->user()->messages()->create([
             'message' => $request->message,
-            'room_id' => $request->room_id
+            'room_id' => $request->room_id,
+            'image' => $image_path,
         ]);
+
 
         broadcast(new MessageSent($message->load('user')))->toOthers();
 
