@@ -192,23 +192,17 @@
                                                 alt="Avatar" class="h-full w-full" />
                                         </div>
                                     </div>
-                                    <div class="flex-row ml-4 ">
+                                    <div class="flex-row ml-4 max-w-md" @contextmenu="showContextMenu($event, message)">
                                         <div v-if="message.user.id != user.id">
                                             {{message.user.name}}
                                         </div>
-                                        <div :id="'message-'+message.id" @contextmenu="showContextMenu($event, message)"
-                                            class="message relative max-w-xl px-4 py-2 text-gray-700 rounded-lg shadow text-center"
+                                        <div v-if="message.message"
+                                            :id="'message-'+message.id"
+                                            class="message relative px-4 py-2 text-gray-700 rounded-lg shadow text-center whitespace-pre-line"
                                             :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'">
-                                            <div v-if="message.message">
-                                                {{ message.message }}
-                                            </div>
-                                            <!-- <span v-if="message.image" :style="'background-image: url(\''+message.image+'\');'">
-
-                                            </span> -->
-                                            <img  :src="'/storage/'+message.image" alt="">
-
-
+                                            {{ message.message }}
                                         </div>
+                                        <img :id="'message-'+message.id" v-if="message.image" class="message w" :src="'/storage/'+message.image" alt="">
                                         <div class="text-right">{{moment(message.updated_at).format('A HH:mm')}}</div>
                                     </div>
 
@@ -234,7 +228,7 @@
                         @emojiClick="handleEmojiClick" :picker-style="style"
                         class="emojipicker scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch" />
                 </div>
-                <div class="flex flex-row items-center">
+                <div v-if="currentRoom" class="flex flex-row items-center">
                     <div class="flex flex-row items-center w-full border rounded-3xl h-12 px-2">
 
                         <button class="flex items-center justify-center h-10 w-10 text-gray-400 ml-1">
@@ -400,7 +394,7 @@
                         //     room_id: this.currentRoom,
                         //     image : this.$refs.image.files[0],
                         // }).then(response => {
-                        //     console.log(this.$refs.image.files[0]);
+                        //     console.log(1);
                         // });
                         // this.newMessage = '',
                         //     this.onButtom();
