@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\MessageDelete;
 use App\Events\MessageSent;
 use App\Models\Message;
 use App\Models\Room;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Intervention\Image\Facades\Image;
 
@@ -45,7 +47,7 @@ class ChatsController extends Controller
         $rooms = [];
         $toRooms = [];
         $room['to_user'] = $to_user->name;
-        if($user->room){
+        if($user->rooms){
             $rooms = json_decode($user->rooms);
         }
 
@@ -54,7 +56,7 @@ class ChatsController extends Controller
         $user->save();
 
         $room['to_user'] = $user->name;
-        if($to_user->room){
+        if($to_user->rooms){
             $toRooms = json_decode($to_user->rooms);
         }
         array_push($toRooms,$room);
@@ -70,7 +72,6 @@ class ChatsController extends Controller
     }
 
     public function sendMessage(Request $request) {
-        // dd($request);
         $image_path = null;
 
         if ($request->hasFile('image')) {
@@ -88,6 +89,18 @@ class ChatsController extends Controller
         broadcast(new MessageSent($message->load('user')))->toOthers();
 
         return $message;
+    }
+
+    public function deleteMessage($id) {
+        $message = Message::findOrFail($id);
+        if($message->image) {
+            $imagePath = 'public/'.$message->image;
+            Storage::delete($imagePath);
+        }
+
+        broadcast(new MessageDelete($message->load('user')))->toOthers();
+        $message->delete();
+        return  'ok';
     }
 
 

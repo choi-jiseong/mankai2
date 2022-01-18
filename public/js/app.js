@@ -20854,7 +20854,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       if (e.target.className.startsWith("message")) {
         e.preventDefault();
         var menu = document.getElementById("message-set-menu");
-        menu.style.left = e.pageX + 'px';
+        menu.style.left = e.pageX + 'px'; //퍼센트로 가능한지 찾아봐야됨
+
         menu.style.top = e.pageY + 'px';
         menu.style.display = 'block';
         console.log(message.id);
@@ -20874,43 +20875,48 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       console.log(this.setMessage);
     },
     removeItem: function removeItem() {
+      var _this = this;
+
       console.log(this.setMessage);
+      axios__WEBPACK_IMPORTED_MODULE_2___default()["delete"]('/chat/delete/message/' + this.setMessage.id).then(function (response) {
+        console.log('delete');
+
+        _this.fetchMessages(_this.currentRoom, _this.currentToUser);
+      });
     },
     fetchMessages: function fetchMessages(roomId, toUser) {
-      var _this = this;
+      var _this2 = this;
 
       //메세지 가져오기
       axios__WEBPACK_IMPORTED_MODULE_2___default().get('/chat/messages/' + roomId).then(function (response) {
-        _this.messages = response.data;
+        _this2.messages = response.data;
       }); // this.$inertia.get('/chat/messages');
 
       this.currentRoom = roomId;
       this.currentToUser = toUser;
     },
     sendMessage: function sendMessage() {
+      var _this3 = this;
+
       //메세지 보내기
       if (this.newMessage == '') {
         if (this.$refs.image) {
-          console.log(this.$refs.image.files[0]);
-          this.messages.data.unshift({
-            user: this.user,
-            message: this.newMessage,
-            image: this.$refs.image.files[0]
-          }); // axios.post('/chat/send', {
+          console.log(this.$refs.image.files[0]); // this.messages.data.unshift({
+          //     user: this.user,
           //     message: this.newMessage,
-          //     room_id: this.currentRoom,
           //     image : this.$refs.image.files[0],
-          // }).then(response => {
-          //     console.log(1);
           // });
-          // this.newMessage = '',
-          //     this.onButtom();
 
-          this.$inertia.post('/chat/send', {
-            message: this.newMessage,
-            room_id: this.currentRoom,
-            image: this.$refs.image.files[0]
+          var formData = new FormData();
+          formData.append('message', this.newMessage);
+          formData.append('room_id', this.currentRoom);
+          formData.append('image', this.$refs.image.files[0]);
+          axios__WEBPACK_IMPORTED_MODULE_2___default().post('/chat/send', formData).then(function (response) {
+            console.log(1);
+
+            _this3.fetchMessages(_this3.currentRoom, _this3.currentToUser);
           });
+          this.newMessage = '', this.onButtom();
         } else {
           return;
         }
@@ -20944,7 +20950,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }
     },
     loadMore: function loadMore() {
-      var _this2 = this;
+      var _this4 = this;
 
       this.loading = true;
 
@@ -20953,50 +20959,54 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return;
       } else {
         axios__WEBPACK_IMPORTED_MODULE_2___default().get(this.messages.next_page_url).then(function (response) {
-          _this2.messages = _objectSpread(_objectSpread({}, response.data), {}, {
-            'data': [].concat(_toConsumableArray(_this2.messages.data), _toConsumableArray(response.data.data))
+          _this4.messages = _objectSpread(_objectSpread({}, response.data), {}, {
+            'data': [].concat(_toConsumableArray(_this4.messages.data), _toConsumableArray(response.data.data))
           });
-          _this2.messages.data = _this2.messages.data;
+          _this4.messages.data = _this4.messages.data;
         })["catch"](function (error) {
           console.log(error);
         });
       }
 
       setTimeout(function (e) {
-        _this2.loading = false;
+        _this4.loading = false;
       }, 1000);
     }
   },
   mounted: function mounted() {
-    var _this3 = this;
+    var _this5 = this;
 
     Echo.join('chat') // Echo.join('user')
     .here(function (user) {
       console.log('here');
       console.log(user);
-      _this3.users = user;
+      _this5.users = user;
     }).joining(function (user) {
       console.log('joining');
       console.log(user);
 
-      _this3.users.push(user);
+      _this5.users.push(user);
     }).leaving(function (user) {
       console.log('leaving');
       console.log(user);
-      _this3.users = _this3.users.filter(function (u) {
+      _this5.users = _this5.users.filter(function (u) {
         return u.id != user.id;
       });
     }).listen('MessageSent', function (event) {
       //이벤트
-      _this3.messages.data.unshift(event.message);
+      _this5.messages.data.unshift(event.message);
 
       if (document.getElementById('chatBody').scrollTop != 0) {
         //메세지 왔을 때 밑에 띄워주는 newMsg에 메세지 저장
-        _this3.newMsg = event.message.message;
+        _this5.newMsg = event.message.message;
       } else {
         // setTimeout(()=> {
         document.getElementById('chatBody').scrollTop = document.getElementById('chatBody').scrollHeight; // }, 0)
       }
+    }).listen('MessageDelete', function (event) {
+      // console.log(event.message);
+      _this5.fetchMessages(_this5.currentRoom, _this5.currentToUser); // console.log(this.messages.data);
+
     });
     var vm = this;
     var chatBody2 = document.getElementById('chatBody');
@@ -21012,7 +21022,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     var emojipicker = document.getElementsByClassName('emojipicker');
     var chatBody = document.getElementById('chatBody');
     chatBody.addEventListener('click', function (e) {
-      e.target === emojipicker ? pass : _this3.showEmojiValue = 0;
+      e.target === emojipicker ? pass : _this5.showEmojiValue = 0;
     });
   },
   created: function created() {
@@ -25828,7 +25838,10 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
         )) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), message.message ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
           key: 1,
           id: 'message-' + message.id,
-          "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["message relative px-4 py-2 text-gray-700 rounded-lg shadow text-center whitespace-pre-line", message.user.id == _ctx.user.id ? 'bg-red-300' : 'bg-gray-100'])
+          "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["message relative px-4 py-2 text-gray-700 rounded-lg shadow text-center", message.user.id == _ctx.user.id ? 'bg-red-300' : 'bg-gray-100']),
+          style: {
+            "word-break": "break-word"
+          }
         }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 11
         /* TEXT, CLASS, PROPS */
         , _hoisted_41)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), message.image ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
@@ -25863,7 +25876,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           return _ctx.removeItem();
         }),
         "class": "border hover:bg-red-500"
-      }, "delete")], 512
+      }, "삭제")], 512
       /* NEED_PATCH */
       ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, false]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_45, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
         onClick: _cache[4] || (_cache[4] = function ($event) {

@@ -83,7 +83,7 @@
                         <div class="text-xs text-gray-400 font-semibold uppercase">Personal</div>
                     </div>
                     <div class="h-full overflow-hidden relative pt-2">
-                        <div class="flex flex-col divide-y h-full overflow-y-auto -mx-4">
+                        <div  class="flex flex-col divide-y h-full overflow-y-auto -mx-4"  >
                             <div @click="fetchMessages(room.id, chatUsers[index])" v-for="(room, index) in rooms"
                                 :key="room.id" class="flex flex-row items-center p-4 relative">
                                 <div class="absolute text-xs text-gray-500 right-0 top-0 mr-4 mt-3">2 hours ago</div>
@@ -198,8 +198,8 @@
                                         </div>
                                         <div v-if="message.message"
                                             :id="'message-'+message.id"
-                                            class="message relative px-4 py-2 text-gray-700 rounded-lg shadow text-center whitespace-pre-line"
-                                            :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'">
+                                            class="message relative px-4 py-2 text-gray-700 rounded-lg shadow text-center"
+                                            :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'" style="word-break: break-word;">
                                             {{ message.message }}
                                         </div>
                                         <img :id="'message-'+message.id" v-if="message.image" class="message w" :src="'/storage/'+message.image" alt="">
@@ -210,7 +210,7 @@
                                 <ul v-show="false" id="message-set-menu" class="absolute list-unstyle bg-white border">
                                     <li @click="copyItem()" class="border hover:bg-red-500">복사</li>
                                     <li @click="updateItem()" class="border hover:bg-red-500">update</li>
-                                    <li @click="removeItem()" class="border hover:bg-red-500">delete</li>
+                                    <li @click="removeItem()" class="border hover:bg-red-500">삭제</li>
                                 </ul>
                             </ul>
                             <div class="relative">
@@ -350,7 +350,7 @@
                 if (e.target.className.startsWith("message")) {
                     e.preventDefault();
                     var menu = document.getElementById("message-set-menu");
-                    menu.style.left = e.pageX + 'px'
+                    menu.style.left = e.pageX + 'px'  //퍼센트로 가능한지 찾아봐야됨
                     menu.style.top = e.pageY + 'px'
                     menu.style.display = 'block'
                     console.log(message.id)
@@ -371,6 +371,11 @@
             },
             removeItem() {
                 console.log(this.setMessage);
+                axios.delete('/chat/delete/message/'+this.setMessage.id)
+                    .then(response => {
+                        console.log('delete');
+                        this.fetchMessages(this.currentRoom, this.currentToUser);
+                    });
             },
             fetchMessages(roomId, toUser) { //메세지 가져오기
                 axios.get('/chat/messages/' + roomId).then(response => {
@@ -384,21 +389,22 @@
                 if (this.newMessage == '') {
                     if(this.$refs.image){
                             console.log(this.$refs.image.files[0]);
-                        this.messages.data.unshift({
-                            user: this.user,
-                            message: this.newMessage,
-                            image : this.$refs.image.files[0],
-                        });
-                        // axios.post('/chat/send', {
+
+                        // this.messages.data.unshift({
+                        //     user: this.user,
                         //     message: this.newMessage,
-                        //     room_id: this.currentRoom,
                         //     image : this.$refs.image.files[0],
-                        // }).then(response => {
-                        //     console.log(1);
                         // });
-                        // this.newMessage = '',
-                        //     this.onButtom();
-                        this.$inertia.post('/chat/send', {message: this.newMessage, room_id: this.currentRoom, image : this.$refs.image.files[0]});
+                        const formData = new FormData();
+                        formData.append('message', this.newMessage);
+                        formData.append('room_id', this.currentRoom);
+                        formData.append('image', this.$refs.image.files[0]);
+                        axios.post('/chat/send', formData).then(response => {
+                            console.log(1);
+                            this.fetchMessages(this.currentRoom, this.currentToUser);
+                        });
+                        this.newMessage = '',
+                            this.onButtom();
                     }else {
                         return;
                     }
@@ -486,7 +492,13 @@
                         // }, 0)
 
                     }
+                })
+                .listen('MessageDelete', (event) => {
+                    // console.log(event.message);
+                    this.fetchMessages(this.currentRoom, this.currentToUser);
+                    // console.log(this.messages.data);
                 });
+
             let vm = this;
             const chatBody2 = document.getElementById('chatBody');
             chatBody2.addEventListener('scroll', function () { //채팅창 스크롤 이벤트
