@@ -202,11 +202,13 @@
                                             :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'" style="word-break: break-word;">
                                             {{ message.message }}
                                         </div>
-
-                                        <img :id="'message-'+message.id" v-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
-                                        <div v-else>
-                                            <a :href="'/storage/'+message.file">{{ message.file }}</a>
+                                        <div v-if="message.file">
+                                            <img :id="'message-'+message.id" v-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
+                                            <div v-else>
+                                                <a :href="'/storage/'+message.file">{{ message.file }}</a>
+                                            </div>
                                         </div>
+
                                         <div class="text-right">{{moment(message.updated_at).format('A HH:mm')}}</div>
                                     </div>
 
@@ -385,7 +387,6 @@
                 axios.get('/chat/messages/' + roomId).then(response => {
 
                     this.messages = response.data;
-                    console.log(this.messages.data[0].file.startsWith('files', 1));
                 });
                 // this.$inertia.get('/chat/messages');
                 this.currentRoom = roomId;
@@ -404,13 +405,15 @@
                         const formData = new FormData();
                         formData.append('message', this.newMessage);
                         formData.append('room_id', this.currentRoom);
+                        if(this.$refs.file.files[0 ]) {
                         formData.append('file', this.$refs.file.files[0]);
+                        }
                         axios.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}}).then(response => {
                             console.log(1);
                             this.fetchMessages(this.currentRoom, this.currentToUser);
                         });
                         this.newMessage = '',
-                            this.onButtom();
+                        this.onButtom();
                         // this.$inertia.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}});
                     }else {
                         return;
@@ -420,7 +423,7 @@
                     this.messages.data.unshift({
                         user: this.user,
                         message: this.newMessage,
-                        image : this.$refs.image.files[0],
+                        file : this.$refs.file.files[0],
                     });
                     axios.post('/chat/send', {
                         message: this.newMessage,
