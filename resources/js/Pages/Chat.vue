@@ -405,7 +405,7 @@
                         const formData = new FormData();
                         formData.append('message', this.newMessage);
                         formData.append('room_id', this.currentRoom);
-                        if(this.$refs.file.files[0 ]) {
+                        if(this.$refs.file.files[0]) {
                         formData.append('file', this.$refs.file.files[0]);
                         }
                         axios.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}}).then(response => {
@@ -413,6 +413,7 @@
                             this.fetchMessages(this.currentRoom, this.currentToUser);
                         });
                         this.newMessage = '',
+                        this.$refs.file = '',
                         this.onButtom();
                         // this.$inertia.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}});
                     }else {
@@ -423,7 +424,6 @@
                     this.messages.data.unshift({
                         user: this.user,
                         message: this.newMessage,
-                        file : this.$refs.file.files[0],
                     });
                     axios.post('/chat/send', {
                         message: this.newMessage,

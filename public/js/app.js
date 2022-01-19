@@ -20925,15 +20925,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
             _this3.fetchMessages(_this3.currentRoom, _this3.currentToUser);
           });
-          this.newMessage = '', this.onButtom(); // this.$inertia.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}});
+          this.newMessage = '', this.$refs.file = '', this.onButtom(); // this.$inertia.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}});
         } else {
           return;
         }
       } else {
         this.messages.data.unshift({
           user: this.user,
-          message: this.newMessage,
-          file: this.$refs.file.files[0]
+          message: this.newMessage
         });
         axios__WEBPACK_IMPORTED_MODULE_2___default().post('/chat/send', {
           message: this.newMessage,
