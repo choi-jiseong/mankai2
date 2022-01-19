@@ -20900,23 +20900,28 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       //메세지 보내기
       if (this.newMessage == '') {
-        if (this.$refs.image) {
-          console.log(this.$refs.image.files[0]); // this.messages.data.unshift({
+        console.log(this.$refs);
+
+        if (this.$refs.file) {
+          // this.messages.data.unshift({
           //     user: this.user,
           //     message: this.newMessage,
           //     image : this.$refs.image.files[0],
           // });
-
           var formData = new FormData();
           formData.append('message', this.newMessage);
           formData.append('room_id', this.currentRoom);
-          formData.append('image', this.$refs.image.files[0]);
-          axios__WEBPACK_IMPORTED_MODULE_2___default().post('/chat/send', formData).then(function (response) {
+          formData.append('file', this.$refs.file.files[0]);
+          axios__WEBPACK_IMPORTED_MODULE_2___default().post('/chat/send', formData, {
+            headers: {
+              'Content-Type': 'multipart/from-data'
+            }
+          }).then(function (response) {
             console.log(1);
 
             _this3.fetchMessages(_this3.currentRoom, _this3.currentToUser);
           });
-          this.newMessage = '', this.onButtom();
+          this.newMessage = '', this.onButtom(); // this.$inertia.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}});
         } else {
           return;
         }
@@ -25844,11 +25849,11 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
           }
         }, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(message.message), 11
         /* TEXT, CLASS, PROPS */
-        , _hoisted_41)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), message.image ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
+        , _hoisted_41)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), message.file ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
           key: 2,
           id: 'message-' + message.id,
-          "class": "message w",
-          src: '/storage/' + message.image,
+          "class": "message",
+          src: '/storage/' + message.file,
           alt: ""
         }, null, 8
         /* PROPS */
@@ -25926,7 +25931,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }, _hoisted_53), _hoisted_54, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", _hoisted_55, [_hoisted_56, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
         type: "file",
         "class": "hidden",
-        ref: "image",
+        ref: "file",
         onChange: _cache[11] || (_cache[11] = function () {
           return _ctx.sendMessage && _ctx.sendMessage.apply(_ctx, arguments);
         })

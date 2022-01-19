@@ -72,19 +72,28 @@ class ChatsController extends Controller
     }
 
     public function sendMessage(Request $request) {
-        $image_path = null;
 
-        if ($request->hasFile('image')) {
-            $fileName = time() . '_' . $request->file('image')->getClientOriginalName();
-            $request->file('image')->storeAs('/public/images/'.$request->room_id.'/', $fileName);
-            $image_path ='/images/'.$request->room_id.'/'.$fileName ;
+        $file_path = null;
+
+
+        if ($request->hasFile('file')) {
+            $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+            $fileType = explode("/",$request->file('file')->getClientMimeType());
+            if($fileType[0] == 'image') {
+                $request->file('file')->storeAs('/public/images/'.$request->room_id.'/', $fileName);
+                $file_path ='/images/'.$request->room_id.'/'.$fileName ;
+            }else {
+                $request->file('file')->storeAs('/public/files/'.$request->room_id.'/', $fileName);
+                $file_path ='/files/'.$request->room_id.'/'.$fileName ;
+            }
+
         }
+
         $message = auth()->user()->messages()->create([
             'message' => $request->message,
             'room_id' => $request->room_id,
-            'image' => $image_path,
+            'file' => $file_path,
         ]);
-
 
         broadcast(new MessageSent($message->load('user')))->toOthers();
 

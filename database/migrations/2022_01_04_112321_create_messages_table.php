@@ -18,7 +18,7 @@ class CreateMessagesTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->integer('room_id')->unsigned();
             $table->text('message')->nullable();
-            $table->string('image')->nullable();
+            $table->string('file')->nullable();
             $table->timestamps();
         });
     }

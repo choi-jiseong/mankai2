@@ -202,7 +202,7 @@
                                             :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'" style="word-break: break-word;">
                                             {{ message.message }}
                                         </div>
-                                        <img :id="'message-'+message.id" v-if="message.image" class="message w" :src="'/storage/'+message.image" alt="">
+                                        <img :id="'message-'+message.id" v-if="message.file" class="message" :src="'/storage/'+message.file" alt="">
                                         <div class="text-right">{{moment(message.updated_at).format('A HH:mm')}}</div>
                                     </div>
 
@@ -262,7 +262,7 @@
                                 <span class="material-icons">
                                     image
                                 </span>
-                                <input type='file' class="hidden" ref="image" @change="sendMessage" />
+                                <input type='file' class="hidden" ref="file" @change="sendMessage" />
                             </label>
                         </div>
                     </div>
@@ -387,8 +387,8 @@
             },
             sendMessage() { //메세지 보내기
                 if (this.newMessage == '') {
-                    if(this.$refs.image){
-                            console.log(this.$refs.image.files[0]);
+                    console.log(this.$refs);
+                    if(this.$refs.file){
 
                         // this.messages.data.unshift({
                         //     user: this.user,
@@ -398,13 +398,14 @@
                         const formData = new FormData();
                         formData.append('message', this.newMessage);
                         formData.append('room_id', this.currentRoom);
-                        formData.append('image', this.$refs.image.files[0]);
-                        axios.post('/chat/send', formData).then(response => {
+                        formData.append('file', this.$refs.file.files[0]);
+                        axios.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}}).then(response => {
                             console.log(1);
                             this.fetchMessages(this.currentRoom, this.currentToUser);
                         });
                         this.newMessage = '',
                             this.onButtom();
+                        // this.$inertia.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}});
                     }else {
                         return;
                     }
@@ -490,7 +491,6 @@
                         document.getElementById('chatBody').scrollTop = document.getElementById('chatBody')
                             .scrollHeight
                         // }, 0)
-
                     }
                 })
                 .listen('MessageDelete', (event) => {
