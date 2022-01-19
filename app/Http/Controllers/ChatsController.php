@@ -85,6 +85,7 @@ class ChatsController extends Controller
             }else {
                 $request->file('file')->storeAs('/public/files/'.$request->room_id.'/', $fileName);
                 $file_path ='/files/'.$request->room_id.'/'.$fileName ;
+
             }
 
         }

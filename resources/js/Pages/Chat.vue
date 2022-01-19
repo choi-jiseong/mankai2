@@ -202,7 +202,11 @@
                                             :class="message.user.id == user.id ? 'bg-red-300' : 'bg-gray-100'" style="word-break: break-word;">
                                             {{ message.message }}
                                         </div>
-                                        <img :id="'message-'+message.id" v-if="message.file" class="message" :src="'/storage/'+message.file" alt="">
+
+                                        <img :id="'message-'+message.id" v-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
+                                        <div v-else>
+                                            <a :href="'/storage/'+message.file">{{ message.file }}</a>
+                                        </div>
                                         <div class="text-right">{{moment(message.updated_at).format('A HH:mm')}}</div>
                                     </div>
 
@@ -379,7 +383,9 @@
             },
             fetchMessages(roomId, toUser) { //메세지 가져오기
                 axios.get('/chat/messages/' + roomId).then(response => {
+
                     this.messages = response.data;
+                    console.log(this.messages.data[0].file.startsWith('files', 1));
                 });
                 // this.$inertia.get('/chat/messages');
                 this.currentRoom = roomId;
