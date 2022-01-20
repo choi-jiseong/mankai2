@@ -37,8 +37,11 @@ Route::get('/test', function () {
 
 Route::get('/chat/messages/{roomId}', [ChatsController::class, 'fetchMessages'])->name('chat.messages');
 
+Route::get('/chat/download/photo/{image}', [ChatsController::class, 'downloadImage'])->name('img.download');
+
 Route::post('/chat/send', [ChatsController::class, 'sendMessage'])->name('chat.send');
 
 Route::post('/chat/create/room', [ChatsController::class, 'createRoom'])->name('chat.create');
 
 Route::delete('/chat/delete/message/{roomId}', [ChatsController::class, 'deleteMessage'])->name('chat.delete');
+

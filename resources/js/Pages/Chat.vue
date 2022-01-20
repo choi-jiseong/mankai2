@@ -203,12 +203,10 @@
                                             {{ message.message }}
                                         </div>
                                         <div v-if="message.file">
-                                            <div v-if="message.file.startsWith('[')">
-                                                <div v-for="image in JSON.parse(message.file)" :key="image">
-                                                    <img :id="'message-'+message.id" class="message" :src="'/storage/'+image" alt="">
-                                                </div>
+                                            <div v-if="message.file.startsWith('[')" class="message flex flex-wrap">
+                                                <img v-for="image in JSON.parse(message.file)" :key="image" :id="'message-'+message.id" @click="openPhotoModal = true, this.clickPhoto = image"  class="message w-1/2" :src="'/storage/'+image"  alt="">
                                             </div>
-                                            <img :id="'message-'+message.id" v-else-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
+                                            <img @click="openPhotoModal = true, this.clickPhoto = image"  :id="'message-'+message.id" v-else-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
                                             <div v-else >
                                                 <div class="message border border-2 rounded-xl h-16 text-center p-3">
                                                     <a class="message" :href="'/storage/'+message.file">{{ message.file.split('_')[1] }}</a>
@@ -266,14 +264,9 @@
                                     mood
                                 </span>
                             </button>
-                            <button class="flex items-center justify-center h-10 w-8 text-gray-400">
-                                <span class="material-icons">
-                                    attachment
-                                </span>
-                            </button>
                             <label class="flex cursor-pointer items-center justify-center h-10 w-8 text-gray-400 ml-1 mr-2">
                                 <span class="material-icons">
-                                    image
+                                    attachment
                                 </span>
                                 <input type='file' class="hidden" multiple ref="file" @change="sendMessage" />
                             </label>
@@ -302,6 +295,20 @@
             </template>
             <template #footer>
                 <button @click="createRoom(this.checkUser.id)">createRoom</button>
+            </template>
+
+        </jet-dialog-modal>
+                <jet-dialog-modal :show="openPhotoModal">
+
+            <template #content>
+                <img class="message" :src="'/storage/'+this.clickPhoto" alt="">
+            </template>
+            <template #footer>
+                <button @click="downloadPhoto" class="flex items-center justify-center h-10 w-8 text-gray-400">
+                    <span class="material-icons">
+                        mood
+                    </span>
+                </button>
             </template>
 
         </jet-dialog-modal>
@@ -346,9 +353,16 @@
                 currentToUser: null,
                 loading: false,
                 isfullpage: false,
+                openPhotoModal : false,
+                clickPhoto : null,
             }
         },
         methods: {
+            downloadPhoto() {
+                axios.get('/chat/download/photo/'+this.clickPhoto).then(response => {
+                    console.log('ok');
+                })
+            },
             createRoom(id) {
                 axios.post('/chat/create/room', {
                     id: id

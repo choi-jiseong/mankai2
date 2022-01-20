@@ -20,6 +20,10 @@ class ChatsController extends Controller
         $this->middleware('auth');
     }
 
+    public function downloadImage($image) {
+        return Storage::download('/storage/'+$image);
+    }
+
     public function chatIndex() {
         $user = User::find(auth()->user()->id);
         $roomUserNames = [];
@@ -84,12 +88,12 @@ class ChatsController extends Controller
                     if($fileType[0] == 'image'){
                         $fileName = time() . '_' . $request->file('file')[$i]->getClientOriginalName();
                         $request->file('file')[$i]->storeAs('/public/images/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
-                        $file_path ='/images/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
+                        $file_path ='images/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
                         array_push($images, $file_path);
                     }else {
                         $fileName = time() . '_' . $request->file('file')[$i]->getClientOriginalName();
                         $request->file('file')[$i]->storeAs('/public/files/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
-                        $file_path ='/files/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
+                        $file_path ='files/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
 
                         $message = auth()->user()->messages()->create([
                             'message' => $request->message,
@@ -113,11 +117,11 @@ class ChatsController extends Controller
                 if($fileType[0] == 'image') {
                     $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
                     $request->file('file')->storeAs('/public/images/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
-                    $file_path ='/images/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
+                    $file_path ='images/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
                 }else {
                     $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
                     $request->file('file')->storeAs('/public/files/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
-                    $file_path ='/files/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
+                    $file_path ='files/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
                 }
                 $message = auth()->user()->messages()->create([
                     'message' => $request->message,
