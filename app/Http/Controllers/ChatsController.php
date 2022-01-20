@@ -72,34 +72,86 @@ class ChatsController extends Controller
     }
 
     public function sendMessage(Request $request) {
-
         $file_path = null;
-
-        // dd($request->file('file'));
+        $images = [];
+        // dd($request->file());
         if ($request->hasFile('file')) {
+            // array_push($files, $request->file('file'));
+            // dd(is_array($request->file('file')));
+            if(is_array($request->file('file'))) {
+                for($i = 0; $i < count($request->file('file')); $i++){
+                    $fileType = explode("/",$request->file('file')[$i]->getClientMimeType());
+                    if($fileType[0] == 'image'){
+                        $fileName = time() . '_' . $request->file('file')[$i]->getClientOriginalName();
+                        $request->file('file')[$i]->storeAs('/public/images/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
+                        $file_path ='/images/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
+                        array_push($images, $file_path);
+                    }else {
+                        $fileName = time() . '_' . $request->file('file')[$i]->getClientOriginalName();
+                        $request->file('file')[$i]->storeAs('/public/files/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
+                        $file_path ='/files/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
 
-            $fileType = explode("/",$request->file('file')->getClientMimeType());
-            if($fileType[0] == 'image') {
-                $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
-                $request->file('file')->storeAs('/public/images/'.$request->room_id.'/', $fileName);
-                $file_path ='/images/'.$request->room_id.'/'.$fileName ;
+                        $message = auth()->user()->messages()->create([
+                            'message' => $request->message,
+                            'room_id' => $request->room_id,
+                            'file' => $file_path,
+                        ]);
+
+                        broadcast(new MessageSent($message->load('user')))->toOthers();
+                    }
+                }
+
+                $message = auth()->user()->messages()->create([
+                    'message' => $request->message,
+                    'room_id' => $request->room_id,
+                    'file' => json_encode($images),
+                ]);
+
+                broadcast(new MessageSent($message->load('user')))->toOthers();
             }else {
-                $fileName = $request->file('file')->getClientOriginalName();
-                $request->file('file')->storeAs('/public/files/'.$request->room_id.'/', $fileName);
-                $file_path ='/files/'.$request->room_id.'/'.$$fileName ;
+                $fileType = explode("/",$request->file('file')->getClientMimeType());
+                if($fileType[0] == 'image') {
+                    $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+                    $request->file('file')->storeAs('/public/images/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
+                    $file_path ='/images/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
+                }else {
+                    $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+                    $request->file('file')->storeAs('/public/files/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
+                    $file_path ='/files/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;
+                }
+                $message = auth()->user()->messages()->create([
+                    'message' => $request->message,
+                    'room_id' => $request->room_id,
+                    'file' => $file_path,
+                ]);
 
+                broadcast(new MessageSent($message->load('user')))->toOthers();
             }
+            // $fileType = explode("/",$request->file('file')->getClientMimeType());
+            // if($fileType[0] == 'image') {
+            //     $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+            //     $request->file('file')->storeAs('/public/images/'.$request->room_id.'/', $fileName);
+            //     $file_path ='/images/'.$request->room_id.'/'.$fileName ;
+            // }else {
+            //     $fileName = $request->file('file')->getClientOriginalName();
+            //     $request->file('file')->storeAs('/public/files/'.$request->room_id.'/', $fileName);
+            //     $file_path ='/files/'.$request->room_id.'/'.$$fileName ;
+
+            // }
+
+        }else{
+            if(!$request->message){
+                return;
+            }
+            $message = auth()->user()->messages()->create([
+                'message' => $request->message,
+                'room_id' => $request->room_id,
+                'file' => $file_path,
+            ]);
+
+            broadcast(new MessageSent($message->load('user')))->toOthers();
 
         }
-
-        $message = auth()->user()->messages()->create([
-            'message' => $request->message,
-            'room_id' => $request->room_id,
-            'file' => $file_path,
-        ]);
-
-        broadcast(new MessageSent($message->load('user')))->toOthers();
-
         return $message;
     }
 

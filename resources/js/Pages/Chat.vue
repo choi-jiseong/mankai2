@@ -203,7 +203,12 @@
                                             {{ message.message }}
                                         </div>
                                         <div v-if="message.file">
-                                            <img :id="'message-'+message.id" v-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
+                                            <div v-if="message.file.startsWith('[')">
+                                                <div v-for="image in JSON.parse(message.file)" :key="image">
+                                                    <img :id="'message-'+message.id" class="message" :src="'/storage/'+image" alt="">
+                                                </div>
+                                            </div>
+                                            <img :id="'message-'+message.id" v-else-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
                                             <div v-else >
                                                 <div class="message border border-2 rounded-xl h-16 text-center p-3">
                                                     <a class="message" :href="'/storage/'+message.file">{{ message.file.split('_')[1] }}</a>
@@ -318,14 +323,12 @@
         VuemojiPickerStyle
     } from 'vuemoji-picker'
     import JetDialogModal from '@/JetStream/DialogModal.vue'
-    import FileUpload from 'vue-upload-component'
     export default defineComponent({
         props: ['user', 'rooms', 'chatUsers'],
         components: {
             AppLayout,
             VuemojiPicker,
             JetDialogModal,
-            FileUpload
         },
         data() {
             return {
