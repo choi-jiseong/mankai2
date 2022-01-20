@@ -75,16 +75,18 @@ class ChatsController extends Controller
 
         $file_path = null;
 
-
+        // dd($request->file('file'));
         if ($request->hasFile('file')) {
-            $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
+
             $fileType = explode("/",$request->file('file')->getClientMimeType());
             if($fileType[0] == 'image') {
+                $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
                 $request->file('file')->storeAs('/public/images/'.$request->room_id.'/', $fileName);
                 $file_path ='/images/'.$request->room_id.'/'.$fileName ;
             }else {
+                $fileName = $request->file('file')->getClientOriginalName();
                 $request->file('file')->storeAs('/public/files/'.$request->room_id.'/', $fileName);
-                $file_path ='/files/'.$request->room_id.'/'.$fileName ;
+                $file_path ='/files/'.$request->room_id.'/'.$$fileName ;
 
             }
 
@@ -103,9 +105,9 @@ class ChatsController extends Controller
 
     public function deleteMessage($id) {
         $message = Message::findOrFail($id);
-        if($message->image) {
-            $imagePath = 'public/'.$message->image;
-            Storage::delete($imagePath);
+        if($message->file) {
+            $file_path = 'public/'.$message->file;
+            Storage::delete($file_path);
         }
 
         broadcast(new MessageDelete($message->load('user')))->toOthers();

@@ -116,7 +116,7 @@
                 </div>
             </div>
             <div class="flex flex-col h-full w-full bg-white px-4 py-6">
-                <div class="flex flex-row items-center py-4 px-6 rounded-2xl shadow">
+                <div v-show="currentRoom" class="flex flex-row items-center py-4 px-6 rounded-2xl shadow">
                     <div class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500 text-pink-100">
                         T
                     </div>
@@ -204,8 +204,10 @@
                                         </div>
                                         <div v-if="message.file">
                                             <img :id="'message-'+message.id" v-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
-                                            <div v-else>
-                                                <a :href="'/storage/'+message.file">{{ message.file }}</a>
+                                            <div v-else >
+                                                <div class="message border border-2 rounded-xl h-16 text-center p-3">
+                                                    <a class="message" :href="'/storage/'+message.file">{{ message.file.split('_')[1] }}</a>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -268,7 +270,7 @@
                                 <span class="material-icons">
                                     image
                                 </span>
-                                <input type='file' class="hidden" ref="file" @change="sendMessage" />
+                                <input type='file' class="hidden" multiple ref="file" @change="sendMessage" />
                             </label>
                         </div>
                     </div>
@@ -403,11 +405,16 @@
                         //     image : this.$refs.image.files[0],
                         // });
                         const formData = new FormData();
-                        formData.append('message', this.newMessage);
                         formData.append('room_id', this.currentRoom);
-                        if(this.$refs.file.files[0]) {
-                        formData.append('file', this.$refs.file.files[0]);
+                        // console.log(this.$refs.file.files.length);
+                        if(this.$refs.file.files.length > 1){
+                            for(let i = 0; i <this.$refs.file.files.length; i++ ){
+                                formData.append('file[]', this.$refs.file.files[i]);
+                            }
+                        }else{
+                            formData.append('file', this.$refs.file.files[0]);
                         }
+
                         axios.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}}).then(response => {
                             console.log(1);
                             this.fetchMessages(this.currentRoom, this.currentToUser);
