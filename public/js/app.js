@@ -27651,7 +27651,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       , _hoisted_8);
     }), 128
     /* KEYED_FRAGMENT */
-    ))])) : message.file.startsWith('images', 1) ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
+    ))])) : message.file.startsWith('images') ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("img", {
       key: 1,
       onClick: _cache[0] || (_cache[0] = function ($event) {
         return $data.openPhotoModal = true, _this.clickPhoto = _ctx.image;

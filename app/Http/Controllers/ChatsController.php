@@ -115,6 +115,7 @@ class ChatsController extends Controller
             }else {
                 $fileType = explode("/",$request->file('file')->getClientMimeType());
                 if($fileType[0] == 'image') {
+                    $request->file('file');
                     $fileName = time() . '_' . $request->file('file')->getClientOriginalName();
                     $request->file('file')->storeAs('/public/images/'.$request->room_id.'/'.date('Y-m-d').'/', $fileName);
                     $file_path ='images/'.$request->room_id.'/'.date('Y-m-d').'/'.$fileName ;

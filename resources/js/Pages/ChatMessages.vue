@@ -23,7 +23,7 @@
                 <div v-if="message.file.startsWith('[')" class="message flex flex-wrap">
                     <img v-for="image in JSON.parse(message.file)" :key="image" :id="'message-'+message.id" @click="openPhotoModal = true, this.clickPhoto = image"  class="message w-1/2" :src="'/storage/'+image"  alt="">
                 </div>
-                <img @click="openPhotoModal = true, this.clickPhoto = image"  :id="'message-'+message.id" v-else-if="message.file.startsWith('images', 1)" class="message" :src="'/storage/'+message.file" alt="">
+                <img @click="openPhotoModal = true, this.clickPhoto = image"  :id="'message-'+message.id" v-else-if="message.file.startsWith('images')" class="message" :src="'/storage/'+message.file" alt="">
                 <div v-else >
                     <div class="message border border-2 rounded-xl h-16 text-center p-3">
                         <a class="message" :href="'/storage/'+message.file">{{ message.file.split('_')[1] }}</a>
