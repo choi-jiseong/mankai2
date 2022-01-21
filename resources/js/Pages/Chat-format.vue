@@ -1,9 +1,120 @@
 <template>
     <app-layout icon="chat">
         <div class="flex flex-row  h-[89vh] antialiased text-gray-800">
+            <div class="flex flex-row w-96 flex-shrink-0 bg-gray-100 p-4 hidden sm:block">
 
-            <chat-room-list :rooms="rooms" :users="this.users" :chatUsers="chatUsers" @roomList="fetchMessages" />
+                <div class="flex flex-col w-full h-full pl-4 pr-4 py-4 -mr-4 ">
+                    <div class="flex flex-row items-center">
+                        <div class="flex flex-row items-center">
+                            <div class="text-xl font-semibold">Messages</div>
+                            <div
+                                class="flex items-center justify-center ml-2 text-xs h-5 w-5 text-white bg-red-500 rounded-full font-medium">
+                                5</div>
+                        </div>
+                        <div class="ml-auto">
+                            <button @click="openRoomInvite = true"
+                                class="flex items-center justify-center h-7 w-7 bg-gray-200 text-gray-500 rounded-full">
+                                <span class="material-icons">
+                                    add
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <ul class="flex flex-row items-center justify-between">
+                            <li>
+                                <a href="#"
+                                    class="flex items-center pb-3 text-xs font-semibold relative text-indigo-800">
+                                    <span>All Conversations</span>
+                                    <span class="absolute left-0 bottom-0 h-1 w-6 bg-indigo-800 rounded-full"></span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="flex items-center pb-3 text-xs text-gray-700 font-semibold">
+                                    <span>Archived</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="flex items-center pb-3 text-xs text-gray-700 font-semibold">
+                                    <span>Starred</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-xs text-gray-400 font-semibold uppercase">Team</div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="flex flex-col -mx-4">
+                            <div class="relative flex flex-row items-center p-4">
+                                <div class="absolute text-xs text-gray-500 right-0 top-0 mr-4 mt-3">5 min</div>
+                                <div
+                                    class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500 text-pink-300 font-bold flex-shrink-0">
+                                    T
+                                </div>
+                                <div class="flex flex-col flex-grow ml-3">
+                                    <div class="text-sm font-medium">Cuberto</div>
+                                    <div class="text-xs truncate w-40">Lorem ipsum dolor sit amet, consectetur
+                                        adipisicing elit. Debitis, doloribus?</div>
+                                </div>
+                                <div class="flex-shrink-0 ml-2 self-end mb-1">
+                                    <span
+                                        class="flex items-center justify-center h-5 w-5 bg-red-500 text-white text-xs rounded-full">5</span>
+                                </div>
+                            </div>
+                            <div
+                                class="flex flex-row items-center p-4 bg-gradient-to-r from-red-100 to-transparent border-l-2 border-red-500">
+                                <div
+                                    class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500 text-pink-300 font-bold flex-shrink-0">
+                                    T
+                                </div>
+                                <div class="flex flex-col flex-grow ml-3">
+                                    <div class="flex items-center">
+                                        <div class="text-sm font-medium">UI Art Design</div>
+                                        <div class="h-2 w-2 rounded-full bg-green-500 ml-2"></div>
+                                    </div>
+                                    <div class="text-xs truncate w-40">Lorem ipsum dolor sit amet, consectetur
+                                        adipisicing elit. Debitis, doloribus?</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5">
+                        <div class="text-xs text-gray-400 font-semibold uppercase">Personal</div>
+                    </div>
+                    <div class="h-full overflow-hidden relative pt-2">
+                        <div  class="flex flex-col divide-y h-full overflow-y-auto -mx-4"  >
+                            <div @click="fetchMessages(room.id, chatUsers[index])" v-for="(room, index) in rooms"
+                                :key="room.id" class="flex flex-row items-center p-4 relative">
+                                <div class="absolute text-xs text-gray-500 right-0 top-0 mr-4 mt-3">2 hours ago</div>
+                                <div
+                                    class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500 text-pink-300 font-bold flex-shrink-0">
+                                    T
+                                </div>
+                                <div class="flex flex-col flex-grow ml-3">
+                                    <div class="text-sm font-medium">{{ chatUsers[index] }}</div>
+                                    <div class="text-xs truncate w-40">Good after noon! how can i help you?</div>
+                                </div>
+                                <div class="flex-shrink-0 ml-2 self-end mb-1">
+                                    <span
+                                        class="flex items-center justify-center h-5 w-5 bg-red-500 text-white text-xs rounded-full">3</span>
+                                </div>
+                            </div>
 
+                        </div>
+                        <div class="absolute bottom-0 right-0 mr-2">
+                            <button
+                                class="flex items-center justify-center shadow-sm h-10 w-10 bg-red-500 text-white rounded-full">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="flex flex-col h-full w-full bg-white px-4 py-6">
                 <div v-show="currentRoom" class="flex flex-row items-center py-4 px-6 rounded-2xl shadow">
                     <div class="flex items-center justify-center h-10 w-10 rounded-full bg-pink-500 text-pink-100">
@@ -70,9 +181,7 @@
                         <div>
                             <ul id="chatBody"
                                 class="space-y-2  overflow-y-auto max-h-[67vh] flex flex-col-reverse w-full p-2 scrollbar-thumb-blue scrollbar-thumb-rounded scrollbar-track-blue-lighter scrollbar-w-2 scrolling-touch ">
-
-                                <chat-messages :messages="this.messages.data" :user="user" @deleteMessage="this.fetchMessages(this.currentRoom, this.currentToUser)" />
-
+                                <chat-messages :messages="this.messages.data" :user="user" />
                             </ul>
                             <div class="relative">
                                 <button @click="onButtom(), this.newMsg = ''" id="newMsg" v-show="newMsg"
@@ -132,7 +241,36 @@
                     </div>
                 </div>
             </div>
+
         </div>
+        <jet-dialog-modal :show="openRoomInvite">
+            <template #title>
+                Favorite
+            </template>
+            <template #content>
+                <div>
+                    <div @click="this.checkUser = user" v-for="user in users" :key="user.id">{{user.name}}</div>
+                </div>
+            </template>
+            <template #footer>
+                <button @click="createRoom(this.checkUser.id)">createRoom</button>
+            </template>
+
+        </jet-dialog-modal>
+                <jet-dialog-modal :show="openPhotoModal">
+
+            <template #content>
+                <img class="message" :src="'/storage/'+this.clickPhoto" alt="">
+            </template>
+            <template #footer>
+                <button @click="downloadPhoto" class="flex items-center justify-center h-10 w-8 text-gray-400">
+                    <span class="material-icons">
+                        mood
+                    </span>
+                </button>
+            </template>
+
+        </jet-dialog-modal>
     </app-layout>
 
 </template>
@@ -143,7 +281,6 @@
     } from 'vue'
     import AppLayout from '@/Layouts/AppLayout.vue'
     import ChatMessages from './ChatMessages.vue'
-    import ChatRoomList from './ChatRoomList.vue'
     import axios from 'axios'
     import moment from 'moment'
     import $ from 'jquery'
@@ -160,7 +297,6 @@
             VuemojiPicker,
             JetDialogModal,
             ChatMessages,
-            ChatRoomList,
         },
         data() {
             return {
@@ -168,12 +304,18 @@
                 messages: [],
                 newMessage: '',
                 newMsg: '',
+                setMessage: null,
+                moment: moment,
                 showEmojiValue: 0,
                 locale: '',
+                openRoomInvite: false,
+                checkUser: null,
                 currentRoom: null,
                 currentToUser: null,
                 loading: false,
                 isfullpage: false,
+                openPhotoModal : false,
+                clickPhoto : null,
             }
         },
         methods: {
@@ -182,16 +324,51 @@
                     console.log('ok');
                 })
             },
+            createRoom(id) {
+                axios.post('/chat/create/room', {
+                    id: id
+                }).then(response => {
+                    console.log('success');
+                })
+            },
+            // showContextMenu(e, message) {
+            //     console.log(1);
+            //     console.log(message);
+            //     if (e.target.className.startsWith("message")) {
+            //         e.preventDefault();
+            //         var menu = document.getElementById("message-set-menu");
+            //         menu.style.left = e.pageX + 'px'  //퍼센트로 가능한지 찾아봐야됨
+            //         menu.style.top = e.pageY + 'px'
+            //         menu.style.display = 'block'
+            //         this.setMessage = message;
+            //     } else {
+            //         this.hideContextMenu();
+            //     }
+            // },
             hideContextMenu() {
                 document.getElementById("message-set-menu").style.display = "none"
                 this.showEmojiValue = 0
             },
+            // copyItem() {
+            //     console.log(this.setMessage);
+            // },
+            // updateItem() {
+            //     console.log(this.setMessage);
+            // },
+            // removeItem() {
+            //     console.log(this.setMessage);
+            //     axios.delete('/chat/delete/message/'+this.setMessage.id)
+            //         .then(response => {
+            //             console.log('delete');
+            //             this.fetchMessages(this.currentRoom, this.currentToUser);
+            //         });
+            // },
             fetchMessages(roomId, toUser) { //메세지 가져오기
-                console.log(11);
                 axios.get('/chat/messages/' + roomId).then(response => {
 
                     this.messages = response.data;
                 });
+                // this.$inertia.get('/chat/messages');
                 this.currentRoom = roomId;
                 this.currentToUser = toUser;
             },
@@ -200,8 +377,14 @@
                     console.log(this.$refs);
                     if(this.$refs.file){
 
+                        // this.messages.data.unshift({
+                        //     user: this.user,
+                        //     message: this.newMessage,
+                        //     image : this.$refs.image.files[0],
+                        // });
                         const formData = new FormData();
                         formData.append('room_id', this.currentRoom);
+                        // console.log(this.$refs.file.files.length);
                         if(this.$refs.file.files.length > 1){
                             for(let i = 0; i <this.$refs.file.files.length; i++ ){
                                 formData.append('file[]', this.$refs.file.files[i]);
@@ -217,6 +400,7 @@
                         this.newMessage = '',
                         this.$refs.file = '',
                         this.onButtom();
+                        // this.$inertia.post('/chat/send', formData, {headers: {'Content-Type': 'multipart/from-data'}});
                     }else {
                         return;
                     }
@@ -275,6 +459,7 @@
         },
         mounted() {
             Echo.join('chat')
+                // Echo.join('user')
                 .here(user => {
                     console.log('here');
                     console.log(user);
@@ -303,7 +488,9 @@
                     }
                 })
                 .listen('MessageDelete', (event) => {
+                    // console.log(event.message);
                     this.fetchMessages(this.currentRoom, this.currentToUser);
+                    // console.log(this.messages.data);
                 });
 
             let vm = this;
@@ -326,6 +513,7 @@
             var locale = window.navigator.userLanguage || window.navigator.language;
             this.locale = locale.substr(0, 2);
             moment.locale(locale);
+            // this.fetchMessages();
         }
     })
 </script>
